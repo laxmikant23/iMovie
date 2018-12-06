@@ -13,3 +13,11 @@ V
 &app/src/main/res/layout/movie_item.xml,a/1/a1ceff8a3b67a540e62ce938c3549c4a5d93ae83
 m
 =app/src/main/java/com/mymovieapp/viewmodels/MovieViewModel.kt,5/8/58d69636e1e415688974b785128772d9df8ecee9
+R
+"app/src/main/res/values/dimens.xml,c/3/c3c1811dec2dbad2deeafb9aad505ca9631da740
+p
+@app/src/main/java/com/mymovieapp/models/retrofit/MovieService.kt,5/2/526b4b06f7a30a22393562ab39744f75f2c707e8
+[
++app/src/main/java/com/mymovieapp/Utility.kt,6/b/6b4129f1195dd8e7db701400c209fc661e534d4b
+o
+?app/src/main/java/com/mymovieapp/Utils/InfiniteScrollListner.kt,9/3/93a9cb2510efc22dd4460924de7ff23853d1789b

@@ -31,11 +31,11 @@ class MainActivity : AppCompatActivity() {
         gridLayout =  GridLayoutManager(this@MainActivity,2)
 
         setupListAdapter()
-        fetchItems()
+        fetchItems(pageNo)
     }
 
-    fun fetchItems(){
-        model!!.loadPopularMovies(pageNo)!!.observe(this, object: LiveData<ResultMovie>(), Observer<ResultMovie> {
+    fun fetchItems(page:Int){
+        model!!.loadPopularMovies(page)!!.observe(this, object: LiveData<ResultMovie>(), Observer<ResultMovie> {
             override fun onChanged(resultMovie: ResultMovie?) {
                 list.addAll( resultMovie!!.results)
                 movieAdapter!!.setMovieList(list)
@@ -50,9 +50,10 @@ class MainActivity : AppCompatActivity() {
         recyclerView!!.adapter = movieAdapter
         infiniteScrollListener = object : InfiniteScrollListner(gridLayout,pageNo){
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-                fetchItems()
+                fetchItems(page)
             }
 
         }
+        recyclerView!!.addOnScrollListener(infiniteScrollListener)
     }
 }

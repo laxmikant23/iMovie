@@ -9,9 +9,9 @@ import com.mymovieapp.BR
 import com.mymovieapp.R
 import com.mymovieapp.databinding.MovieItemBinding
 import com.mymovieapp.room.Results
-class MovieAdapter(var data: List<Results>): RecyclerView.Adapter<WeatherViewHolder>() {
+class MovieAdapter(private var movieList: MutableList<Results>): RecyclerView.Adapter<WeatherViewHolder>() {
     override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
-        holder.bind(data[position])
+        holder.bind(movieList[position])
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
@@ -21,11 +21,19 @@ class MovieAdapter(var data: List<Results>): RecyclerView.Adapter<WeatherViewHol
 
         return WeatherViewHolder(binding)
     }
-    fun setMovieList(movieList : List<Results>){
-        data = movieList
-        notifyDataSetChanged()
+    fun setMovieList(movies : List<Results>){
+        val prevCount = itemCount
+       // movieList.clear()
+        movieList.addAll(movies)
+        //notifyDataSetChanged()
+
+        if (prevCount > movies.size) {
+            notifyDataSetChanged()
+        } else {
+            notifyItemRangeInserted(prevCount, movieList.size)
+        }
     }
-    override fun getItemCount(): Int = data.size
+    override fun getItemCount(): Int = movieList.size
 }
 
 class WeatherViewHolder(private val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root) {
