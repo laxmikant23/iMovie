@@ -2,36 +2,45 @@ package com.mymovieapp.viewmodels
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.LiveData
-import com.mymovieapp.Utility
+import android.databinding.BindingAdapter
+import android.databinding.ObservableArrayList
+import android.databinding.ObservableBoolean
+import android.databinding.ObservableList
+import android.support.v7.widget.RecyclerView
+import com.mymovieapp.adapter.MovieAdapter
 import com.mymovieapp.models.ResultMovie
-import com.mymovieapp.models.retrofit.RetroFitClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.mymovieapp.models.retrofit.MovieSource
+import com.mymovieapp.room.Results
 
+class MovieViewModel(
+        context: Application,
+        private val repository: Repo
+) : AndroidViewModel(context) {
 
-class MovieViewModel(application: Application) : AndroidViewModel(application) {
-    private var popularMovies = MutableLiveData<ResultMovie>()
-    init {
-
-             popularMovies = MutableLiveData<ResultMovie>()
-
+    companion object {
+        @JvmStatic
+        @BindingAdapter("bind:items")
+        fun entries(recyclerView: RecyclerView, movies: List<Results>) =
+                (recyclerView.adapter as MovieAdapter).addToList(movies)
     }
 
-    fun loadPopularMovies(pageNum : Int) : LiveData<ResultMovie>? {
-        var callResponse = RetroFitClient.create()
-        val request = callResponse!!.getPopularMovies(Utility.API_KEY,pageNum)
-        request.enqueue(object : Callback<ResultMovie> {
-            override fun onResponse(call: Call<ResultMovie>?, response: Response<ResultMovie>?) {
-                popularMovies.value = response?.body()
+    val dataLoading = ObservableBoolean(false)
+    val items: ObservableList<Results> = ObservableArrayList()
+    internal val openMovieDetailsEvent = SingleLiveEvent<Results>()
+
+    fun loadMovies(index: Int) {
+        dataLoading.set(true)
+        repository.getMovies(index,object :MovieSource.MoviesCallback{
+            override fun onFailure(t: Throwable?) {
+
             }
 
-            override fun onFailure(call: Call<ResultMovie>?, t: Throwable?) {
-
+            override fun onSuccess(movies: ResultMovie) {
+                with(items) {
+                    addAll(movies.results)
+                }
             }
+
         })
-        return popularMovies
     }
 }

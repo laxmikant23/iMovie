@@ -1,44 +1,52 @@
 package com.mymovieapp.adapter
-
-
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.databinding.DataBindingUtil
 import android.support.v7.widget.RecyclerView
-import com.mymovieapp.BR
-import com.mymovieapp.R
 import com.mymovieapp.databinding.MovieItemBinding
 import com.mymovieapp.room.Results
-class MovieAdapter(private var movieList: MutableList<Results>): RecyclerView.Adapter<WeatherViewHolder>() {
-    override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
-        holder.bind(movieList[position])
+import com.mymovieapp.viewmodels.MovieViewModel
+
+class MovieAdapter(
+        private var movies: MutableList<Results>,
+        private val moviesViewModel: MovieViewModel
+) : RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = movies[position]
+        holder.run {
+            bind(item)
+            binding.root.setOnClickListener({ moviesViewModel.openMovieDetailsEvent.value = item })
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding: MovieItemBinding =
-                DataBindingUtil.inflate(layoutInflater, R.layout.movie_item, parent, false)
-
-        return WeatherViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val layoutInflater = LayoutInflater.from(parent?.context)
+        val itemBinding = MovieItemBinding.inflate(layoutInflater, parent, false)
+        return ViewHolder(itemBinding)
     }
-    fun setMovieList(movies : List<Results>){
+
+    override fun getItemCount(): Int = movies.size
+
+
+
+    fun addToList(movies: List<Results>) {
         val prevCount = itemCount
-       // movieList.clear()
-        movieList.addAll(movies)
-        //notifyDataSetChanged()
-
+        this.movies.clear()
+        this.movies.addAll(movies)
         if (prevCount > movies.size) {
             notifyDataSetChanged()
         } else {
-            notifyItemRangeInserted(prevCount, movieList.size)
+            notifyItemRangeInserted(prevCount, movies.size)
         }
     }
-    override fun getItemCount(): Int = movieList.size
-}
 
-class WeatherViewHolder(private val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(data: Any) {
-        binding.setVariable(BR.data, data)
-        binding.executePendingBindings()
+    inner class ViewHolder(val binding: MovieItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Results) {
+            with(binding){
+                data = item
+                executePendingBindings()
+            }
+
+        }
     }
 }
+
